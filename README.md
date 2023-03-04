@@ -1,1 +1,1 @@
-"# image_blur_convulation" 
+https://fr.wikipedia.org/wiki/Noyau_(traitement_d%27image)

@@ -75,7 +75,8 @@ const goConvulate = () => {
     convulatedImageContext.putImageData(convulatedImageData, 0, 0);
 };
 
-const convulate = (imageData) => {
+const generationConvulationMatrix = () => {
+    /*
     const minSize = 20;
     const maxSize = 25;
     var convulationMatrixSize = Math.floor(Math.random() * (maxSize - minSize + 1) + minSize);
@@ -87,6 +88,21 @@ const convulate = (imageData) => {
             Array.from({ length: convulationMatrixSize }, () => Math.floor(Math.random() * 100))
         )
     );
+    */
+
+    var convulationMatrix = [
+        [-1, -1, -1, -1, -1],
+        [-1, -1, -1, -1, -1],
+        [-1, -1, 24, -1, -1],
+        [-1, -1, -1, -1, -1],
+        [-1, -1, -1, -1, -1],
+    ];
+
+    return convulationMatrix;
+};
+
+const convulate = (imageData) => {
+    var convulationMatrix = generationConvulationMatrix();
 
     var newImageData = new ImageData(imageData.width, imageData.height);
 
