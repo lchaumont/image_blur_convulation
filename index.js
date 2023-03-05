@@ -1,9 +1,6 @@
 window.addEventListener("load", function () {
     var fileInput = document.getElementById("file-input");
     fileInput.addEventListener("change", onChangeFileInput);
-
-    var goConvulateButton = document.getElementById("blur-matrix-button");
-    goConvulateButton.addEventListener("click", goConvulate);
 });
 
 const scaleConvulationMatrixToMatchSumOne = (convulationMatrix) => {
@@ -21,6 +18,31 @@ const scaleConvulationMatrixToMatchSumOne = (convulationMatrix) => {
     }
 
     return convulationMatrix;
+};
+
+const gaussianFilter = (size, variance) => {
+    const gaussian = new Array(size).fill(null).map(() => new Array(size).fill(null));
+    const center = Math.floor(size / 2);
+    let sum = 0;
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            const x = i - center;
+            const y = j - center;
+            const exponent = -(x * x + y * y) / (2 * variance * variance);
+            gaussian[i][j] = Math.exp(exponent);
+            sum += gaussian[i][j];
+        }
+    }
+
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            gaussian[i][j] /= sum;
+        }
+    }
+
+    console.log(gaussian);
+    return gaussian;
 };
 
 const onChangeFileInput = (event) => {
@@ -53,19 +75,44 @@ const onChangeFileInput = (event) => {
         var y = originalImageCanvas.height / 2 - newHeight / 2;
 
         originalImageContext.drawImage(img, x, y, newWidth, newHeight);
+
+        /*
+        convulateAndAppendInCanvas("border-detection-canvas", [
+            [-1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1],
+            [-1, -1, 24, -1, -1],
+            [-1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1],
+        ]);
+
+        convulateAndAppendInCanvas("neatness-amelioration-canvas", [
+            [0, -1, 0],
+            [-1, 5, -1],
+            [0, -1, 0],
+        ]);
+
+        convulateAndAppendInCanvas("box-blur-canvas", [
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+        ]);
+        */
+
+        convulateAndAppendInCanvas("gaussian-blur-canvas", gaussianFilter(35, 30));
     };
     img.src = URL.createObjectURL(file);
 };
 
-const goConvulate = () => {
+const convulateAndAppendInCanvas = (destinationCanvasId, convulationMatrix) => {
     var originalImageCanvas = document.getElementById("original-image-canvas");
     var originalImageContext = originalImageCanvas.getContext("2d");
 
     var convulatedImageData = convulate(
-        originalImageContext.getImageData(0, 0, originalImageCanvas.width, originalImageCanvas.height)
+        originalImageContext.getImageData(0, 0, originalImageCanvas.width, originalImageCanvas.height),
+        convulationMatrix
     );
 
-    var convulatedImageCanvas = document.getElementById("convulated-image-canvas");
+    var convulatedImageCanvas = document.getElementById(destinationCanvasId);
     var convulatedImageContext = convulatedImageCanvas.getContext("2d");
 
     convulatedImageCanvas.width = convulatedImageData.width;
@@ -101,9 +148,7 @@ const generationConvulationMatrix = () => {
     return convulationMatrix;
 };
 
-const convulate = (imageData) => {
-    var convulationMatrix = generationConvulationMatrix();
-
+const convulate = (imageData, convulationMatrix) => {
     var newImageData = new ImageData(imageData.width, imageData.height);
 
     for (var y = 0; y < imageData.height; y++) {
@@ -176,4 +221,12 @@ const setPixel = (imageData, index, pixel) => {
     imageData.data[index + 1] = pixel.computed_g;
     imageData.data[index + 2] = pixel.computed_b;
     imageData.data[index + 3] = 255;
+};
+
+// Function that create a gaussian filter matrix with random variance
+const generateGaussianFilter = (size, variance) => {
+    const matrix = Array.from({ length: size }, () =>
+        Array.from({ length: size }, () => Math.floor(Math.random() * 100))
+    );
+    return scaleConvulationMatrixToMatchSumOne(matrix);
 };

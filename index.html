@@ -10,12 +10,14 @@
     </head>
     <body>
         <input type="file" id="file-input" accept="image/*" />
-        <div id="blur-matrix-container">
-            <button id="blur-matrix-button">Blur matrix</button>
-        </div>
         <div id="canvas-container">
             <canvas id="original-image-canvas"></canvas>
-            <canvas id="convulated-image-canvas"></canvas>
+            <!-- 
+            <canvas id="border-detection-canvas"></canvas>
+            <canvas id="neatness-amelioration-canvas"></canvas>
+            <canvas id="box-blur-canvas"></canvas>
+            -->
+            <canvas id="gaussian-blur-canvas"></canvas>
         </div>
     </body>
 </html>
